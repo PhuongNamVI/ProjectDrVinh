@@ -1,0 +1,486 @@
+# import chainlit as cl
+
+# # Chainlit
+# @cl.on_chat_start
+# async def start():
+#     chain = qa_bot()
+#     msg = cl.Message(content="Starting the bot...")
+#     await msg.send()
+#     msg.content = "Hi, Welcome"
+#     await msg.update()
+#     cl.user_session.set("chain", chain)
+
+
+# @cl.on_message
+# async def main(message):
+#     chain = cl.user_session.set("chain")
+#     cb = cl.AsyncLangchainCallbackHandler(
+#         stream_final_answer=True, answer_prefix_tokens=["FINAL", "ANSWER"]
+#     )
+#     cb.answer_reached = True
+#     res = await chain.acall(message, callbacks=[cb])
+#     answer = res["result"]
+#     sources = res["source_documents"]
+
+#     if sources:
+#         answer += f"\nSources:" + str(sources)
+#     else:
+#         answer += f"\nNo Sources Found"
+
+#     await cl.Message(content=answer).send()
+
+
+
+
+html
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatBot</title>
+    <link rel="stylesheet" href="static/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1><i class="fas fa-robot"></i> WELCOME CHATBOT</h1>
+      <div id="chat-history" class="chat-history"></div>
+
+      <textarea id="query" placeholder="Ask a question..."></textarea>
+      <button onclick="askQuestion()">Get Answer</button>
+      <!-- Có phần trả lời riêng -->
+      <!-- <div id="answer"></div> -->
+    </div>
+
+    
+    <div class="container">
+        <div id="extra-container" class="extra-container"></div>
+    </div>
+        
+    <script src="static/script.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+css
+
+
+
+
+
+
+
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* h1 {
+    margin-bottom: 20px;
+    font-size: 4em;
+    color:#ed276c;
+} */
+
+h1 {
+    margin-bottom: 50px;
+    font-size: 4em;
+    color: #5c8dff; /* Màu xanh dương sáng */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Bóng đổ cho chữ */
+    font-weight: bold; /* Chữ đậm tạo sự mạnh mẽ */
+    animation: glow 1.5s ease-in-out infinite; /* Ánh sáng phát sáng */
+}
+
+
+@keyframes glow {
+    0% {
+        text-shadow: 0 0 10px #d3a8f0, 0 0 20px #d3a8f0; /* Ánh sáng phát ra từ chữ */
+    }
+    50% {
+        text-shadow: 0 0 30px #d3a8f0, 0 0 40px #d3a8f0; /* Tăng độ sáng ở giữa */
+    }
+    100% {
+        text-shadow: 0 0 10px #d3a8f0, 0 0 20px #d3a8f0; /* Giảm độ sáng trở lại */
+    }
+}
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    /* background: linear-gradient(135deg, #ff6b6b 10%, #7bff00 100%); */
+    background: linear-gradient(135deg, #141313 10%, #061eef 100%);
+    color: #333;
+}
+
+.container {
+    text-align: center;
+    max-width: 1000px;
+    width: 90%;
+    padding: 30px 40px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    animation: fadeIn 1s ease-in-out;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+
+
+textarea {
+    width: 90%;
+    height: 40px;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: none;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+textarea:focus {
+    border-color: #0066cc; /* Màu xanh đậm */
+    box-shadow: 0 0 8px rgba(0, 102, 204, 0.7); /* Bóng đổ xanh đậm */
+    outline: none;
+}
+
+button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #1d1511, #1d1511);
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #39c1ea, #8489e0);
+    transform: scale(1.05);
+}
+
+.chat-history {
+    max-height: 300px;
+    text-align: left;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f0f4ff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chat-entry {
+    margin-bottom: 15px;
+}
+
+.chat-question {
+    font-weight: bold;
+    color: #333;
+}
+
+.chat-answer {
+    color: #555;
+    margin-top: 5px;
+}
+
+.extra-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    min-height: 100px; /* Chiều cao tối thiểu */
+}
+
+
+
+
+/* #answer {
+    margin-top: 25px;
+    padding: 15px;
+    background-color: #f0f4ff;
+    border-left: 5px solid #6B73FF;
+    border-radius: 8px;
+    text-align: left;
+    font-size: 1em;
+    color: #333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+#answer:hover {
+    background-color: #e6eaff;
+} */
+
+
+
+
+model.py
+
+
+# from langchain.prompts import PromptTemplate
+# from langchain.embeddings import HuggingFaceBgeEmbeddings
+# from langchain.vectorstores import FAISS
+# from langchain_ollama import OllamaLLM
+# from langchain.chains import RetrievalQA
+
+# from fastapi import FastAPI
+# from pydantic import BaseModel
+# from fastapi.responses import FileResponse
+# from fastapi.staticfiles import StaticFiles
+# import uvicorn
+
+# DB_FAISS_PATH = "vectorstores/db_faiss"
+
+# custom_promt_template = """ Use the following pieces of information to answer the users's question.
+# IF you don't know the answer, please just say that you don't know the answer, don't try to make up an answer 
+
+# Context:{context}
+# Question:{question}
+
+# Only returns the helpful answer below and nothing else.
+# Helpful answer: 
+# """
+# chat_history = []
+
+
+# def set_custom_prompt():
+#     prompt = PromptTemplate(
+#         template=custom_promt_template, input_variables=["context", "question"]
+#     )
+#     return prompt
+
+
+# def load_llm():
+#     MAX_TOKENS = 2048
+#     llm = OllamaLLM(model="llama3.2", max_tokens=MAX_TOKENS, temperature=0.5)
+#     return llm
+
+
+# def retrieval_qa_chain(llm, prompt, db):
+#     qa_chain = RetrievalQA.from_chain_type(
+#         llm=llm,
+#         chain_type="stuff",
+#         retriever=db.as_retriever(search_kwargs={"k": 2}),
+#         return_source_documents=True,
+#         chain_type_kwargs={"prompt": prompt},
+#     )
+#     return qa_chain
+
+
+# def qa_bot():
+#     embeddings = HuggingFaceBgeEmbeddings(
+#         model_name="sentence-transformers/all-MiniLM-L6-v2",
+#         model_kwargs={"device": "cpu"},
+#     )
+#     db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
+#     llm = load_llm()
+#     qa_prompt = set_custom_prompt()  # phong cách nói
+#     qa = retrieval_qa_chain(llm, qa_prompt, db)
+#     return qa
+
+
+# def final_result(query):
+#     qa_result = qa_bot()
+#     response = qa_result({"query": query})
+
+#     # Append question and answer to chat history
+#     chat_history.append({"question": query, "answer": response["result"]})
+
+#     return response
+
+
+# app = FastAPI()
+
+# class QueryModel(BaseModel):
+#     query: str
+
+# @app.post("/get-answer")
+# async def get_answer(query: QueryModel):
+#     response = final_result(query.query)
+#     return {"answer": response["result"], "history": chat_history}
+
+# app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# @app.get("/")
+# async def read_root():
+#     return FileResponse("index.html")
+
+# if __name__ == "__main__":
+#     uvicorn.run(app, port=8000)
+
+
+
+
+Script no history
+// async function askQuestion() {
+//     const query = document.getElementById("query").value;
+//     const chatHistoryDiv = document.getElementById("chat-history");
+  
+//     if (!query) {
+//       alert("Please enter a question.");
+//       return;
+//     }
+  
+//     // Gửi câu hỏi đến API
+//     const response = await fetch("/get-answer", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ query: query }),
+//     });
+  
+//     const data = await response.json();
+  
+//     const entryDiv = document.createElement("div");
+//     entryDiv.classList.add("chat-entry");
+  
+//     const questionDiv = document.createElement("div");
+//     questionDiv.classList.add("chat-question");
+//     questionDiv.innerText = `User: ${query}`;
+  
+//     const answerDiv = document.createElement("div");
+//     answerDiv.classList.add("chat-answer");
+//     answerDiv.innerText = `ChatBot: ${data.answer}`;
+  
+//     entryDiv.appendChild(questionDiv);
+//     entryDiv.appendChild(answerDiv);
+//     chatHistoryDiv.appendChild(entryDiv);
+  
+//     // Xóa trường nhập sau khi gửi
+//     document.getElementById("query").value = "";
+
+//     document.getElementById("extra-container").innerHTML = "<p>This is extra content.</p>";
+
+//   }
+
+
+  
+
+async function askQuestion() {
+    const query = document.getElementById("query").value;
+    const chatHistoryDiv = document.getElementById("chat-history");
+  
+    if (!query) {
+      alert("Please enter a question.");
+      return;
+    }
+  
+    // Gửi câu hỏi đến API
+    const response = await fetch("/get-answer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: query }),
+    });
+  
+    const data = await response.json();
+  
+    const entryDiv = document.createElement("div");
+    entryDiv.classList.add("chat-entry");
+  
+    const questionDiv = document.createElement("div");
+    questionDiv.classList.add("chat-question");
+    questionDiv.innerText = `User: ${query}`;
+  
+    const answerDiv = document.createElement("div");
+    answerDiv.classList.add("chat-answer");
+    answerDiv.innerText = `ChatBot: ${data.answer}`;
+  
+    entryDiv.appendChild(questionDiv);
+    entryDiv.appendChild(answerDiv);
+    chatHistoryDiv.appendChild(entryDiv);
+  
+    // Xóa trường nhập sau khi gửi
+    document.getElementById("query").value = "";
+
+    document.getElementById("extra-container").innerHTML = "<p>This is extra content.</p>";
+
+  }
+
+// Có phần trả lời riêng 
+
+// async function askQuestion() {
+//   const query = document.getElementById("query").value;
+//   const answerDiv = document.getElementById("answer");
+//   const chatHistoryDiv = document.getElementById("chat-history");
+
+//   if (!query) {
+//     alert("Please enter a question.");
+//     return;
+//   }
+
+//   // Send query to the API
+//   const response = await fetch("/get-answer", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ query: query }),
+//   });
+
+//   const data = await response.json();
+
+//   // Display the answer
+//   answerDiv.innerText = data.answer;
+
+//   // Clear the chat history div
+//   chatHistoryDiv.innerHTML = "";
+
+//   // Update chat history with each question-answer pair
+//   data.history.forEach((entry) => {
+//     const entryDiv = document.createElement("div");
+//     entryDiv.classList.add("chat-entry");
+
+//     const questionDiv = document.createElement("div");
+//     questionDiv.classList.add("chat-question");
+//     questionDiv.innerText = `Q: ${entry.question}`;
+
+//     const answerDiv = document.createElement("div");
+//     answerDiv.classList.add("chat-answer");
+//     answerDiv.innerText = `A: ${entry.answer}`;
+
+//     entryDiv.appendChild(questionDiv);
+//     entryDiv.appendChild(answerDiv);
+//     chatHistoryDiv.appendChild(entryDiv);
+//   });
+
+//   // Clear input field after sending
+//   document.getElementById("query").value = "";
+// }
