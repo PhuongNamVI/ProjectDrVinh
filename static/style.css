@@ -95,12 +95,12 @@ button:hover {
 }
 
 .user-label {
-    color: #007BFF; /* Màu xanh cho User */
+    color: #007BFF; 
     font-weight: bold;
 }
 
 .bot-label {
-    color: #28A745; /* Màu xanh lá cho ChatBot */
+    color: #28A745; 
     font-weight: bold;
 }
 
