@@ -1,11 +1,9 @@
-// Hàm tải lịch sử trò chuyện từ server khi trang được tải
 async function loadChatHistory() {
   try {
     const response = await fetch("/get-chat-history");
     const data = await response.json();
     const chatHistoryDiv = document.getElementById("chat-history");
 
-    // Xử lý lịch sử trò chuyện và hiển thị
     data.history.forEach((entry) => {
       const entryDiv = document.createElement("div");
       entryDiv.classList.add("chat-entry");
