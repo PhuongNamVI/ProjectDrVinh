@@ -55,7 +55,7 @@ def qa_bot():
     )
     db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
     llm = load_llm()
-    qa_prompt = set_custom_prompt()  # phong cách nói
+    qa_prompt = set_custom_prompt()  
     qa = retrieval_qa_chain(llm, qa_prompt, db)
     return qa
 
@@ -63,21 +63,19 @@ def final_result(query):
     qa_result = qa_bot()
     response = qa_result({"query": query})
 
-    # Append question and answer to chat history
     chat_history.append({"question": query, "answer": response["result"]})
 
-    # Save chat history to file
     save_chat_history()
 
     return response
 
 def save_chat_history():
-    # Store history to JSON file
+
     with open(CHAT_HISTORY_FILE, "w") as f:
         json.dump(chat_history, f, indent=4)
 
 def load_chat_history():
-    # Load history from JSON file
+
     if os.path.exists(CHAT_HISTORY_FILE):
         with open(CHAT_HISTORY_FILE, "r") as f:
             return json.load(f)
